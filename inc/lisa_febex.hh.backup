@@ -1,0 +1,273 @@
+//
+//last updated@15 Apr,2024
+//Z.Chen
+//
+//
+//
+#ifndef _LISAFEBEX_HH_
+#define _LISAFEBEX_HH_
+
+#include <TFile.h>
+#include <TChain.h>
+#include <TROOT.h>
+#include "lisa_Env.hh"  //global variable
+#include "lisa_ucesb.hh"
+#include "../src/lisa_ucesb.cc"//for "lisa_ucesb."
+#include "lisa_settings.hh"
+
+class lisa_febex: public lisa_ucesb{
+
+    public :
+
+        lisa_febex();
+        lisa_febex(TTree *tree, lisa_settings *settings);
+        virtual ~lisa_febex();
+
+        virtual void     loadSettings(lisa_settings *settings);//load settings
+        virtual void     getSingleTrace(TTree *tree);//fill data to rawTrace_v and rawTrace_I
+        virtual void     getCorrectTrace();//fill data to corrTrace_v and corrTrace_I
+        virtual void     getMWDTrace();//fill data to MWDTrace_v and MWDTrace_I
+        virtual void     getTraces(TTree *tree);//analyze N traces
+        virtual void     calcTime();//calculate CFD time
+        virtual void     calcEnergy();//calculate MWD energy
+
+        virtual void     setVerbose(Int_t verbose=0){fVerbose = verbose;}
+        virtual Int_t   getVerbose(){return fVerbose;}
+        virtual void     setTree(TTree *tree=0){febex_tree = tree;}
+        virtual TTree*   getTree(){return febex_tree;}
+        virtual void     setJentry(Long64_t jentry=22){fJentry = jentry;};
+        virtual Long64_t getJentry(){return fJentry;};
+        virtual void     setFebexCh(UInt_t ch=0){fFebexCh = ch;};
+        virtual UInt_t   getFebexCh(){return fFebexCh;};
+        virtual void     setLength(Int_t length=3000){febex_length = length;};
+        virtual Int_t   getLength(){return febex_length;};
+        virtual void     setEvtNo(UInt_t evtno=0){febex_evtno = evtno;};
+        virtual UInt_t   getEvtNo(){return febex_evtno;};
+        virtual void     setTrigger(UInt_t trigger=0){febex_trigger = trigger;};
+        virtual UInt_t   getTrigger(){return febex_trigger;};
+
+        virtual void     setRawTraceV(UInt_t *tr_v){this->rawTrace_v = tr_v;};
+        virtual UInt_t*   getRawTraceV(){return rawTrace_v;};
+        virtual void     setRawTraceI(UInt_t *tr_I){this->rawTrace_I = tr_I;};
+        virtual UInt_t*   getRawTraceI(){return rawTrace_I;}
+
+        virtual void     setCorrectTraceV(Int_t *tr_v){this->corrTrace_v = tr_v;};
+        virtual Int_t*   getCorrectTraceV(){return corrTrace_v;};
+        virtual void     setCorrectTraceI(Int_t *tr_I){this->corrTrace_I = tr_I;};
+        virtual Int_t*   getCorrectTraceI(){return corrTrace_I;};
+
+        virtual void     setMWDTraceV(Double_t *tr_v){this->MWDTrace_v = tr_v;};
+        virtual Double_t*   getMWDTraceV(){return MWDTrace_v;};
+        virtual void     setMWDTraceI(Double_t *tr_I){this->MWDTrace_I = tr_I;};
+        virtual Double_t*   getMWDTraceI(){return MWDTrace_I;}
+        virtual void     setMWDLength(Int_t length=0){MWDLength = length;};
+        virtual Int_t   getMWDLength(){return MWDLength;}
+
+        //***CFD time***//
+        virtual void     setCFDtime(Double_t time=0.0){CFDtime = time;};
+        virtual Double_t getCFDtime(){return CFDtime;};
+        virtual void     setCFDTraceV(Double_t *tr_v){this->CFDTrace_v = tr_v;};
+        virtual Double_t*   getCFDTraceV(){return CFDTrace_v;};
+        virtual void     setCFDTraceI(Double_t *tr_I){this->CFDTrace_I = tr_I;};
+        virtual Double_t*   getCFDTraceI(){return CFDTrace_I;}
+        //***MWD energy***//
+        virtual void     setMWDenergy(Double_t energy=0.0){fMWDenergy = energy;};
+        virtual Double_t getMWDenergy(){return fMWDenergy;};
+        virtual void     setMWDEnergyCalcWindow(Int_t *window){this->fMWDenergyCalcWindow = window;};
+        virtual Int_t* getMWDEnergyCalcWindow(){return fMWDenergyCalcWindow;};
+
+        //*** copy from lisa_settings ***//
+        //23/04/2024
+        //*** setter ***//
+        virtual void setVerbose(Int_t verbose=1){fVerbose = verbose;}
+        virtual void setFebexDataPath(TString path){fFebexDataFile = path;}
+        virtual void setNewSettingFile(TString name){fNewSettingFile = name;}
+        virtual void setOptRootFileName(TString name){fOptRootFileName = name;}
+
+        virtual void setIsAllEntry(bool flag){fIsAllEntryRead = flag;}
+        virtual void setIsSingleChannelMode(bool flag){fIsSingleChMode = flag;}
+        virtual void setIsMultiChannelMode(bool flag){fIsMultiChMode = flag;}
+        virtual void setIsSubNoise(bool flag){fIsSubNoise = flag;}
+        virtual void setIsIntegral(bool flag){fIsIntegral = flag;}
+        virtual void setIsMWD(bool flag){fIsMWD = flag;}
+        virtual void setIsBaselineCorr(bool flag){fIsBaselineCorr = flag;}
+        virtual void setIsTimeCorr(bool flag){fIsTimeCorr = flag;}
+        virtual void setIsSaveTraces(bool flag){fIsSaveTraces = flag;}
+        virtual void setIsSaveAsRoot(bool flag){fIsSaveAsRoot = flag;}
+
+        virtual void setIsGo4Unpacker(bool flag){fIsGo4Unpacker = flag;}
+        virtual void setIsUcesbUnpacker(bool flag){fIsUcesbUnpacker = flag;}
+
+        virtual void setSampleRate(Double_t rate){fSampleRate = rate;}
+        virtual void setFebexTraceL(Int_t length){fFebexTraceL = length;}
+        virtual void setRisingTime(Double_t time){fRisingTime = time;}
+        virtual void setDecayTime(Double_t time){fDecaytime = time;}
+
+        virtual void setEntries(Int_t entry1, Int_t entry2){fEntry[0] = entry1; fEntry[1] = entry2;}
+        virtual void setJentry(Int_t jentry){fJentry = jentry;}
+        virtual void setFebexCh(Int_t ch){fFebexCh = ch;}
+
+        virtual void setIntergralWindow(Double_t win1, Double_t win2){fIntergralWindow[0] = win1; fIntergralWindow[1] = win2;}
+        virtual void setTrapezSampleWindow(Int_t win1, Int_t win2){fTrapezSampleWindow[0] = win1; fTrapezSampleWindow[1] = win2;}
+        virtual void setTrapezAmplitudeCalcWindow(Int_t win1, Int_t win2){fTrapezAmpCalcWindow[0] = win1; fTrapezAmpCalcWindow[1] = win2;}
+        virtual void setTrapezMovingWindowLength(Int_t len){fTrapezMovingWindowLength = len;}
+
+        virtual void setHistoNBins(Int_t nbins){fHistoNbins = nbins;}
+        virtual void setEnergyHistRange(Int_t range1, Int_t range2){fEHisto[0] = range1; fEHisto[1] = range2;}
+        virtual void setTimeHistRange(Int_t range1, Int_t range2){fTHisto[0] = range1; fTHisto[1] = range2;}
+        virtual void setEnergySpecRange(Int_t range1, Int_t range2){fEnergySpecRange[0] = range1; fEnergySpecRange[1] = range2;}
+        virtual void setTimeSpecRange(Int_t range1, Int_t range2){fTimeSpecRange[0] = range1; fTimeSpecRange[1] = range2;}
+        virtual void setTraceAmpRange(Int_t range1, Int_t range2){fTraceAmpRange[0] = range1; fTraceAmpRange[1] = range2;}
+        virtual void setCFDref(Double_t cfd){fCFDref = cfd;}
+        virtual void setCFDfraction(Double_t cfd){fCFDFra = cfd;}
+        virtual void setCFDdelay(Double_t cfd){fCFDdelay = cfd;}
+
+        virtual void setFitParLimit(double fval){fParLimit = fval;}
+
+        //*** getter ***//
+        virtual Int_t getVerbose(){return fVerbose;}
+        virtual TString getFebexDataPath(){return fFebexDataFile;}
+        virtual TString getNewSettingFile(){return fNewSettingFile;}
+        virtual TString getOptRootFileName(){return fOptRootFileName;}
+
+        virtual bool getIsAllEntry(){return fIsAllEntryRead;}
+        virtual bool getIsSingleChannelMode(){return fIsSingleChMode;}
+        virtual bool getIsMultiChannelMode(){return fIsMultiChMode;}
+        virtual bool getIsSubNoise(){return fIsSubNoise;}
+        virtual bool getIsIntegral(){return fIsIntegral;}
+        virtual bool getIsMWD(){return fIsMWD;}
+        virtual bool getIsBaselineCorr(){return fIsBaselineCorr;}
+        virtual bool getIsTimeCorr(){return fIsTimeCorr;}
+        virtual bool getIsSaveTraces(){return fIsSaveTraces;}
+        virtual bool getIsSaveAsRoot(){return fIsSaveAsRoot;}
+
+        virtual bool getIsGo4Unpacker(){return fIsGo4Unpacker;}
+        virtual bool getIsUcesbUnpacker(){return fIsUcesbUnpacker;}
+
+        virtual Double_t getSampleRate(){return fSampleRate;}
+        virtual Int_t getFebexTraceL(){return fFebexTraceL;}
+        virtual Double_t getRisingTime(){return fRisingTime;}
+        virtual Double_t getDecayTime(){return fDecaytime;}
+
+        virtual Int_t *getEntry(){return fEntry;}
+        virtual Int_t getJentry(){return fJentry;}
+        virtual Int_t getFebexCh(){return fFebexCh;}
+
+        virtual Double_t *getIntergralWindow(){return fIntergralWindow;}
+        virtual Int_t *getTrapezSampleWindow(){return fTrapezSampleWindow;}
+        virtual Int_t *getTrapezAmplitudeCalcWindow(){return fTrapezAmpCalcWindow;}
+        virtual Int_t getTrapezMovingWindowLength(){return fTrapezMovingWindowLength;}
+
+        virtual Int_t getHistoNBins(){return fHistoNbins;}
+        virtual Int_t *getEnergyHistRange(){return fEHisto;}
+        virtual Int_t *getTimeHistRange(){return fTHisto;}
+        virtual Int_t *getEnergySpecRange(){return fEnergySpecRange;}
+        virtual Int_t *getTimeSpecRange(){return fTimeSpecRange;}
+        virtual Int_t *getTraceAmpRange(){return fTraceAmpRange;}
+        virtual Double_t getCFDref(){return fCFDref;}
+        virtual Double_t getCFDfraction(){return fCFDFra;}
+        virtual Double_t getCFDdelay(){return fCFDdelay;}
+
+        virtual double getFitParLimit(){return fParLimit;}
+
+
+
+    protected :
+
+        lisa_settings *fsettings;//settings
+        Int_t fVerbose = 0;//verbose
+        Long64_t fJentry=0;//entry
+        UInt_t fFebexCh=0;//channel
+        Int_t febex_length=9999;//trace length
+        UInt_t febex_evtno=0;//event number
+        UInt_t febex_trigger=0;//trigger mode
+        TTree *febex_tree=0;//tree
+
+        //*** traces ***//
+        UInt_t *rawTrace_v=NULL;//lisa_data_v;amplitude
+        UInt_t *rawTrace_I=NULL;//lisa_data_I;time
+        Int_t *corrTrace_v=NULL;//after baseline correction
+        Int_t *corrTrace_I=NULL;//after baseline correction
+
+        Int_t MWDLength=1000;//size of array
+        Double_t *MWDTrace_v=NULL;//after MWD
+        Double_t *MWDTrace_I=NULL;//after MWD
+
+        //***CFD time***//
+        Double_t CFDtime = 0.0;
+        Double_t *CFDTrace_v = NULL;//after CFD
+        Double_t *CFDTrace_I = NULL;//after CFD
+
+        //***MWD energy***//
+        Double_t fMWDenergy = 0.0;
+        Int_t *fMWDenergyCalcWindow = NULL;
+
+        //*** copy from lisa_settings ***//
+        //23/04/2024
+
+        //*** path and name ***//
+        TString fFebexDataFile = "default";//febex data file
+        TString fSettingFile = "default.set";//setting file
+        TString fNewSettingFile = "default";//new setting file
+        TString fOptRootFileName = "default.root";//output root file name
+
+        //*** functional switch ***//
+        //*** enable and disable ***//
+        bool fIsAllEntryRead = false;//all entry
+        bool fIsSingleChMode = false;//single channel mode
+        bool fIsMultiChMode = false;//multi channel mode
+        bool fIsSubNoise = false;//substract noise
+        bool fIsIntegral = false;//integral
+        bool fIsMWD = false;//mwd
+        bool fIsBaselineCorr = false;//baseline correction
+        bool fIsTimeCorr = false;//time correction
+        bool fIsSaveTraces = false;//save trace
+        bool fIsSaveAsRoot = false;//save as root
+
+        //*** unpacker ***//
+        bool fIsGo4Unpacker = false;//go4 unpacker
+        bool fIsUcesbUnpacker = false;//ucesb unpacker
+
+        //*** details ***//
+        Double_t fSampleRate = 100;//sample rate,[MHz]
+        Int_t fFebexTraceL = 3000;//febex trace length,[pts]
+        Int_t fRisingTime = 100;//rising time,[ns]
+        Double_t fDecaytime = 100;//decay time,[ns]
+
+        Int_t fEntry[2] = {1,2};//entry number for Febex data
+        Int_t fJentry = 0;//jentry under single mode
+        Int_t fFebexCh = 0;//febex channel in single mode
+        Int_t fMultiCh[16] = {0};//febex channel in multi mode
+        Int_t fThreshold[16] = {0};//threshold in multi mode
+
+        //*** MWD and CFD ***//
+        Double_t fIntergralWindow[2] = {0.1,0.2};//energy integral window
+        Int_t fTrapezSampleWindow[2] = {0,1};//trapezoid sample window
+        Int_t fTrapezAmpCalcWindow[2] = {0,1};//trapezoid amplitude calculation window
+        Int_t fTrapezMovingWindowLength = 666;//trapezoid moving window length
+
+        //*** histogram and display ***//
+        Int_t fHistoNbins = 1000;//histogram bins
+        Int_t fEHisto[2] = {0,1};//range of histogram for energy spectrum; only for declaration
+        Int_t fTHisto[2] = {0,1};//range of histogram for time spectrum; only for declaration
+        Int_t fEnergySpecRange[2] = {0,1};//range of histogram for energy spectrum; only for display
+        Int_t fTimeSpecRange[2] = {0,1};//range of histogram for time spectrum; only for display
+        Int_t fTraceAmpRange[2] = {0,1};//range of TGraph for trace;
+        Double_t fCFDwin[2] = {0.1,0.2};//CFD window
+        Double_t fCFDref = 0;//CFD reference
+        Double_t fCFDFra = 0;//fraction
+        Double_t fCFDdelay = 0;//delay
+
+        //*** calibration and fit ***//
+        Double_t fParLimit = 1.0;//par limit for fitting
+        Double_t fCalibPar_b[MAX_SIZE] = {0.};//calibration parameter; bias
+        Double_t fCalibPar_s[MAX_SIZE] = {0.};//calibration parameters; gradient
+        Double_t fmean[MAX_SIZE] = {0.};//mean
+        Double_t fsigma[MAX_SIZE] = {0.};//sigma
+        Double_t famp[MAX_SIZE] = {0.};//amplitude
+        Double_t fEref[MAX_SIZE] = {0.};//reference energy
+        Double_t fEres[MAX_SIZE] = {0.};//energy resolution
+
+        ClassDef(lisa_febex,0)
+};
+#endif
